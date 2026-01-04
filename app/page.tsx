@@ -1,7 +1,8 @@
 "use client";
 import { useState } from "react";
 
-type Msg = { role: "user" | "assistant"; content: string };
+type Role = "user" | "assistant";
+type Msg = { role: Role; content: string };
 
 export default function Home() {
   const [messages, setMessages] = useState<Msg[]>([
@@ -17,7 +18,8 @@ export default function Home() {
     setBusy(true);
     setText("");
 
-    const next = [...messages, { role: "user", content: t }];
+    const userMsg: Msg = { role: "user", content: t };
+    const next: Msg[] = [...messages, userMsg];
     setMessages(next);
 
     try {
@@ -27,9 +29,12 @@ export default function Home() {
         body: JSON.stringify({ messages: next }),
       });
       const j = await r.json();
-      setMessages([...next, { role: "assistant", content: j.text || "(no reply)" }]);
+
+      const assistantMsg: Msg = { role: "assistant", content: j.text || "(no reply)" };
+      setMessages([...next, assistantMsg]);
     } catch {
-      setMessages([...next, { role: "assistant", content: "Error calling server." }]);
+      const assistantMsg: Msg = { role: "assistant", content: "Error calling server." };
+      setMessages([...next, assistantMsg]);
     } finally {
       setBusy(false);
     }
