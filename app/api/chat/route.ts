@@ -1,5 +1,5 @@
 import OpenAI from "openai";
-
+import { loadMemory, addEvent, addFact } from "@/lib/memory";
 export const runtime = "nodejs";
 
 const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
@@ -26,17 +26,30 @@ function json(data: any, status = 200) {
 }
 
 export async function POST(req: Request) {
-  try {
-    const { messages } = await req.json();
-    if (!Array.isArray(messages)) return json({ error: "messages must be an array" }, 400);
+  const { messages } = await req.json();
+  const memory = loadMemory();
 
-    const resp = await client.responses.create({
-      model: process.env.OPENAI_MODEL || "gpt-4o-mini",
-      input: messages,
-    });
+  const memoryContext = `
+Shared Facts:
+${memory.facts.slice(-20).join("\n")}
 
-    return json({ text: resp.output_text ?? "" });
-  } catch (e: any) {
-    return json({ error: e?.message || "server error" }, e?.status || 500);
-  }
+Shared Events:
+${memory.events.slice(-20).map(e => `- ${e.time}: ${e.text}`).join("\n")}
+`;
+
+  const resp = await client.responses.create({
+    model: process.env.OPENAI_MODEL || "gpt-4o-mini",
+    instructions: SYSTEM + "\n" + memoryContext,
+    input: messages,
+  });
+
+  const text = resp.output_text ?? "";
+
+  // VERY simple heuristic:
+  if (text.includes("[FACT]")) addFact(text.replace("[FACT]", "").trim());
+  if (text.includes("[EVENT]")) addEvent(text.replace("[EVENT]", "").trim());
+
+  return new Response(JSON.stringify({ text }), {
+    headers: { "Content-Type": "application/json" }
+  });
 }
