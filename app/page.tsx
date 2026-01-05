@@ -42,7 +42,7 @@ export default function Home() {
 
   return (
     <main style={{ maxWidth: 900, margin: "0 auto", padding: 20, fontFamily: "system-ui" }}>
-      <h1 style={{ marginBottom: 10 }}>stopjg.com</h1>
+      <h1 style={{ marginBottom: 10 }}>0z01.com stopjg.com</h1>
 
       <div style={{ border: "1px solid #333", borderRadius: 12, padding: 12, minHeight: 420 }}>
         {messages.map((m, i) => (
