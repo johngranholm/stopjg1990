@@ -20,8 +20,7 @@ Shared Facts:
 ${memory.facts.slice(-20).join("\n")}
 
 Shared Events:
-${memory.events.slice(-20).map(e => `- ${e.time}: ${e.text}`).join("\n")}
-`;
+${memory.events.slice(-20).map((e: { time: string; text: string }) => `- ${e.time}: ${e.text}`).join("\n")}`;
 
   const resp = await client.responses.create({
     model: process.env.OPENAI_MODEL || "gpt-4o-mini",
