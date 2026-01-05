@@ -6,7 +6,7 @@ type Msg = { role: Role; content: string };
 
 export default function Home() {
   const [messages, setMessages] = useState<Msg[]>([
-    { role: "assistant", content: "Hi, welcome to the Data Center Helper. I was programmed and compiled by John Granholm, and created to help you with your BMS and EPMS troubleshooting. My training material was specific to this endeavor. " },
+    { role: "assistant", content: "Hi, welcome to the Data Center Helper. I was programmed and compiled by John Granholm, and created to help you with your BMS and EPMS troubleshooting. My training material was specific to this endeavor. This is a shared public memory." },
   ]);
   const [text, setText] = useState("");
   const [busy, setBusy] = useState(false);
